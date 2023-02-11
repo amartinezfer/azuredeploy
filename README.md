@@ -1,1 +1,1 @@
-# azure deploy fro unir cloud master
+# azure deploy for unir cloud master
