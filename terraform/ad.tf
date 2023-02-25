@@ -13,17 +13,6 @@ resource "azuread_service_principal" "unirprincipal" {
 
 
 
-resource "azurerm_role_assignment" "aks_cluster" {
-  scope                = azurerm_kubernetes_cluster.unirkube.id
-  role_definition_name = "Contributor"
-  principal_id         =azuread_application.unirapp.application_id
-}
-
-resource "azurerm_role_assignment" "acr" {
-  scope                = azurerm_container_registry.uniracr.id
-  role_definition_name = "Contributor"
-  principal_id         = azuread_application.unirapp.application_id
-}
 
 
 resource "azuread_service_principal_password" "unirprincipalpass" {

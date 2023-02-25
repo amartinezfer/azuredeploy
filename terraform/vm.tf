@@ -1,4 +1,5 @@
 
+
 # Crea una dirección IP pública vm
 resource "azurerm_public_ip" "unirpublicip" {
   name                = "public-ip-vm"

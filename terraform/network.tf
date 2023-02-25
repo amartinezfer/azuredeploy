@@ -22,3 +22,6 @@ resource "azurerm_dns_zone" "unirdnszone" {
   resource_group_name = azurerm_resource_group.unir.name
 }
 
+output "dns_servers" {
+  value = azurerm_dns_zone.unirdnszone.name_servers
+}
