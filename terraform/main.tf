@@ -8,6 +8,14 @@ terraform {
       source  = "hashicorp/azuread"
       version = "=2.35.0"
     }
+    dns = {
+      source  = "hashicorp/dns"
+      version = "=3.2.4"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "=2.3.0"
+    }
   }
 }
 

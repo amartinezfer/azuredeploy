@@ -5,8 +5,19 @@
   vars:
     ansible_ssh_private_key_file: "{{ hostvars[inventory_hostname]['ansible_ssh_private_key_file'] }}"
   become: true 
-
+  collections:
+    - containers.podman
   tasks:
+   - name: Añadir clave GPG del repositorio de Podman
+     apt_key:
+      url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_18.04/Release.key
+      state: present
+
+   - name: Añadir el repositorio de Podman
+     apt_repository:
+      repo: deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_18.04/ /
+      state: present
+      update_cache: yes
    - name: Actualizar repositorios apt
      apt:
         upgrade: dist
@@ -17,3 +28,10 @@
         name:
            - podman
         state: present
+   - name: Crear contenedor de Nginx
+     podman_image:
+      name: nginx-container
+      image: nginx
+      state: started
+      ports:
+        - "8080:80"

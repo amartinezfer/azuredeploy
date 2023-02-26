@@ -32,9 +32,9 @@ resource "azurerm_kubernetes_cluster" "unirkube" {
   dns_prefix          = "unirdnscluster"
 
   linux_profile {
-    admin_username = "uniruser"
+    admin_username = var.adminUser
     ssh_key {
-      key_data = file("~/azure/azuredeploy/terraform/certificates/id_rsa.pub")
+      key_data = file("${var.idRsaPath}")
     }
   }
   
@@ -43,6 +43,9 @@ resource "azurerm_kubernetes_cluster" "unirkube" {
     client_secret = "${azuread_service_principal_password.unirprincipalpass.value}"
   }
 
+  depends_on = [
+    azurerm_container_registry.uniracr
+  ]
   default_node_pool {
     name       = "default"
     node_count = 1
@@ -64,6 +67,9 @@ resource "azurerm_kubernetes_cluster" "unirkube" {
 #  scope                = azurerm_kubernetes_cluster.unirkube.id
 #  role_definition_name = "Contributor"
 #  principal_id         =azuread_application.unirapp.application_id
+#  depends_on = [
+#    azurerm_kubernetes_cluster.unirkube
+#  ]
 #}
 
 

@@ -19,3 +19,15 @@ variable "service_principal_app_id" {
 variable "service_principal_client_secret" {
   default = ""
 }
+
+variable "idRsaPath" {
+  default = "~/azure/azuredeploy/terraform/certificates/id_rsa.pub"
+}
+variable "idRsaPathPrivate" {
+  default = "~/azure/azuredeploy/terraform/certificates/id_rsa"
+}
+
+variable "adminUser" {
+  default = "uniruser"
+}
+

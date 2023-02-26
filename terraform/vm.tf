@@ -23,18 +23,30 @@ resource "azurerm_dns_a_record" "dns_a_record_vm" {
 }
 
 
+#data "dns_a_record_set" "dns" {
+#  host = element(tolist("${azurerm_dns_zone.unirdnszone.name_servers}"), 0)
+#}
+
+
+
 # Crea una tarjeta de interfaz de red
 resource "azurerm_network_interface" "vmnic" {
   name                = "unir-nic-vm"
   location            = azurerm_resource_group.unir.location
-  resource_group_name = azurerm_resource_group.unir.name
-  #dns_servers = data.azurerm_dns_zone.unirdnszone.name_servers
+  resource_group_name = azurerm_resource_group.unir.name  
+  dns_servers = ["8.8.8.8","8.8.4.4"]
   ip_configuration {
     name                          = "vmunic-ip-config"
     subnet_id                     = azurerm_subnet.unirsubnet.id
     public_ip_address_id          = azurerm_public_ip.unirpublicip.id
     private_ip_address_allocation = "Dynamic"
   }
+}
+
+#asocia nsg a interface de red
+resource "azurerm_network_interface_security_group_association" "example" {
+  network_interface_id      = azurerm_network_interface.vmnic.id
+  network_security_group_id = azurerm_network_security_group.ansg.id
 }
 
 # Crea una máquina virtual
@@ -64,7 +76,7 @@ resource "azurerm_linux_virtual_machine" "unirvm" {
 
   admin_ssh_key {
     username   = "uniruser"
-    public_key = file("~/azure/azuredeploy/terraform/certificates/id_rsa.pub")
+    public_key = file("${var.idRsaPath}")
   }
 
 }
