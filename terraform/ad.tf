@@ -29,12 +29,3 @@ resource "azuread_service_principal_password" "unirprincipalpass" {
   service_principal_id = azuread_service_principal.unirprincipal.object_id
 }
 
- output "unir_principal_id" {
-    value     = "${azuread_service_principal.unirprincipal.application_id}"
-    sensitive = false
- }
-
-output "unir_principal_pass" {
-    value     = "${azuread_service_principal_password.unirprincipalpass.value}"
-    sensitive = true
- }

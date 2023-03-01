@@ -3,7 +3,7 @@
   hosts: ansible_host_vm 
   remote_user: ansible_host
   vars:
-    ansible_ssh_private_key_file: "{{ hostvars[inventory_hostname]['ansible_ssh_private_key_file'] }}"
+    ansible_ssh_private_key_file: "{{ hostvars[inventory_hostname]['ansible_ssh_private_key_file'] }}"   
   become: true 
   collections:
     - containers.podman
@@ -22,16 +22,60 @@
      apt:
         upgrade: dist
         update_cache: yes
-   
+   - name: ensure python3 is installed     
+     ansible.builtin.package:
+        name:
+          - python3
+          - python3-pip
+        state: present
    - name: Instalar Podman
      apt:
         name:
            - podman
         state: present
-   - name: Crear contenedor de Nginx
+   - name: Login registry
+     podman_login:
+      username: "{{hostvars[inventory_hostname]['ansible_register_user']}}"
+      password: "{{hostvars[inventory_hostname]['ansible_register_pass']}}"
+      registry: "{{hostvars[inventory_hostname]['ansible_register']}}"
+   - name: create build directory
+     file:
+        path: /tmp/web-dockerfile
+        state: directory
+        owner: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        group: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        mode: '0755'
+   - name: copy Dockerfile
+     copy:
+        src: ../image/httpd
+        dest: /tmp/web-dockerfile
+        owner: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        group: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        mode: '0644'
+   - name: Build a basic OCI image
      podman_image:
-      name: nginx-container
-      image: nginx
-      state: started
-      ports:
-        - "8080:80"
+      name: apache
+      tag: "1.0"
+      path: /tmp/web-dockerfile/httpd      
+      build:
+        cache: no
+        force_rm: yes
+        format: oci
+        annotation:
+          app: apache
+          function: proxy
+          info: Webapp
+   - name: Running httpd image.
+     podman_container:
+          name: apache
+          image: apache:1.0
+          state: started
+          ports:
+            - "8443:8443"
+          generate_systemd:
+            path: /etc/systemd/system/
+            restart_policy: always
+            time: 120
+            names: true
+   - name: start apache service
+     systemd: state=started name=container-apache daemon_reload=yes

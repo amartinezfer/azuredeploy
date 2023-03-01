@@ -82,7 +82,4 @@ resource "azurerm_linux_virtual_machine" "unirvm" {
 }
 
 
- output "vm_public_ip" {
-   value = azurerm_public_ip.unirpublicip.ip_address
-  }
 

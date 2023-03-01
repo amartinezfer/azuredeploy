@@ -58,7 +58,3 @@ resource "azurerm_network_security_group" "ansg" {
   
 }
 
-
-output "dns_servers" {
-  value = azurerm_dns_zone.unirdnszone.name_servers
-}

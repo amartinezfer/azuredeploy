@@ -6,6 +6,9 @@
       kube = azurerm_public_ip.kubeunirpublicip.ip_address
       idrsa = "${var.idRsaPathPrivate}"
       user = "${var.adminUser}"
+      register = azurerm_container_registry.uniracr.login_server
+      register_user = azurerm_container_registry.uniracr.admin_username
+      register_pass = azurerm_container_registry.uniracr.admin_password
     })
 }
 

@@ -9,13 +9,4 @@ resource "azurerm_container_registry" "uniracr" {
  
 }
 
- output "acr_admin_user" {
-    value = azurerm_container_registry.uniracr.admin_username
-  }
-
- output "acr_admin_password" {
-    value = azurerm_container_registry.uniracr.admin_password
-    sensitive = true
-  }
-
 
