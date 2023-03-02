@@ -38,25 +38,40 @@
       username: "{{hostvars[inventory_hostname]['ansible_register_user']}}"
       password: "{{hostvars[inventory_hostname]['ansible_register_pass']}}"
       registry: "{{hostvars[inventory_hostname]['ansible_register']}}"
-   - name: create build directory
+   - name: create build directory docker
      file:
-        path: /tmp/web-dockerfile
+        path: /tmp/dockerfile
         state: directory
         owner: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         group: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         mode: '0755'
-   - name: copy Dockerfile
+    
+   - name: copy Dockerfile web
      copy:
         src: ../image/httpd
-        dest: /tmp/web-dockerfile
+        dest: /tmp/dockerfile
         owner: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         group: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         mode: '0644'
-   - name: Build a basic OCI image
+   - name: copy Dockerfile mongo
+     copy:
+        src: ../image/mongo
+        dest: /tmp/dockerfile
+        owner: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        group: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        mode: '0644'
+   - name: Pull an image httpd
+     podman_image:
+      name: docker://httpd:latest
+   - name: Pull an image mongo
+     podman_image:
+      name: docker://mongo:latest
+
+   - name: Build and push an image web 
      podman_image:
       name: apache
       tag: "1.0"
-      path: /tmp/web-dockerfile/httpd      
+      path: /tmp/dockerfile/httpd      
       build:
         cache: no
         force_rm: yes
@@ -65,10 +80,36 @@
           app: apache
           function: proxy
           info: Webapp
+      push: true
+      username: "{{hostvars[inventory_hostname]['ansible_register_user']}}"
+      password: "{{hostvars[inventory_hostname]['ansible_register_pass']}}"
+      push_args:
+          dest: "{{hostvars[inventory_hostname]['ansible_register']}}/vm"
+      
+   - name:  Build and push an image mongo 
+     podman_image:
+      name: mongo
+      tag: "1.0"
+      path: /tmp/dockerfile/mongo      
+      build:
+        cache: no
+        force_rm: yes
+        format: oci
+        annotation:
+          app: mongo
+          function: bbdd
+          info: mongodb
+      push: true
+      username: "{{hostvars[inventory_hostname]['ansible_register_user']}}"
+      password: "{{hostvars[inventory_hostname]['ansible_register_pass']}}"
+      push_args:
+         dest: "{{hostvars[inventory_hostname]['ansible_register']}}/kube"
+      
+
    - name: Running httpd image.
      podman_container:
           name: apache
-          image: apache:1.0
+          image: "{{hostvars[inventory_hostname]['ansible_register']}}/vm/apache:1.0"
           state: started
           ports:
             - "8443:8443"
