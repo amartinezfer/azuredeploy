@@ -26,13 +26,15 @@ output "unir_principal_pass" {
   }
 
 
-  output "kube_public_ip" {
-   value = azurerm_public_ip.kubeunirpublicip.ip_address
-  }
 
   output "vm_public_ip" {
    value = azurerm_public_ip.unirpublicip.ip_address
   }
+
+ output "mongo_public_ip" {
+   value = azurerm_public_ip.mongo.ip_address
+  }
+
 
   output "dns_servers" {
    value = azurerm_dns_zone.unirdnszone.name_servers
@@ -53,3 +55,6 @@ output "unir_principal_pass" {
     value = azurerm_container_registry.uniracr.login_server
     sensitive = true
   }
+
+
+   
