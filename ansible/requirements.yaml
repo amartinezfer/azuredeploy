@@ -2,3 +2,5 @@ collections:
 - name: containers.podman
 - name: cloud.common
 - name: community.kubernetes
+- name: kubernetes.core
+ 
