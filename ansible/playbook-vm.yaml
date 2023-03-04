@@ -1,9 +1,10 @@
 ---
 - name: Instalar server azure
-  hosts: ansible_host_vm 
+  hosts: ansible_host_vm
   remote_user: ansible_host
   vars:
-    ansible_ssh_private_key_file: "{{ hostvars[inventory_hostname]['ansible_ssh_private_key_file'] }}"   
+    ansible_ssh_private_key_file: "{{ hostvars[inventory_hostname]['ansible_ssh_private_key_file'] }}"
+    ansible_python_interpreter: /usr/bin/python3   
   become: true 
   collections:
     - containers.podman
@@ -20,25 +21,48 @@
       update_cache: yes
    - name: Actualizar repositorios apt
      apt:
-        upgrade: dist
         update_cache: yes
    - name: ensure python3 is installed     
      ansible.builtin.package:
         name:
           - python3
           - python3-pip
+        state: present   
+   - name: Establecer Python3 como versión predeterminada
+     raw: update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+   - name: Instalar PyYAML con pip
+     pip:
+        name: pyyaml
+        state: present
+    
+   - name: Instalar Kubernetes con pip
+     pip:
+        name: kubernetes
         state: present
    - name: Instalar Podman
      apt:
         name:
            - podman
         state: present
+   - name: Add Kubernetes repository key     
+     apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+
+   - name: Add Kubernetes repository  
+     apt_repository:
+      repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+   - name: Install kubectl on Ubuntu 18       
+     apt:
+        name: kubectl
+        state: present     
    - name: Login registry
      podman_login:
       username: "{{hostvars[inventory_hostname]['ansible_register_user']}}"
       password: "{{hostvars[inventory_hostname]['ansible_register_pass']}}"
       registry: "{{hostvars[inventory_hostname]['ansible_register']}}"
-   - name: create build directory docker
+   - name: create build directory
      file:
         path: /tmp/dockerfile
         state: directory
@@ -120,3 +144,27 @@
             names: true
    - name: start apache service
      systemd: state=started name=container-apache daemon_reload=yes
+   
+
+   - name: copy Mongo Kube deploy
+     template:
+        src: ./template/mongoApp.j2
+        dest: /tmp/mongoApp.yaml
+        owner: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        group: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        mode: '0644'
+  
+   - name: copy kubeconfig
+     copy:
+        src: ./kube.config
+        dest: /tmp/kube.config
+        owner: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        group: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        mode: '0644'    
+   - name: Create a Deployment by reading the definition from a local file
+     kubernetes.core.k8s:
+      state: present
+      src: /tmp/mongoApp.yaml
+      kubeconfig: /tmp/kube.config
+      
+        
