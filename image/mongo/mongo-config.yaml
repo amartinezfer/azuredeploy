@@ -1,0 +1,11 @@
+
+
+
+# Configuración de MongoDB
+net:
+  bindIpAll: true
+  port: 27017
+  tls:
+    mode: requireTLS
+    certificateKeyFile: /etc/ssl/mongodb.pem
+
