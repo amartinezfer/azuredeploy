@@ -1,4 +1,5 @@
 
+# creacoin cluster kubernetes
 resource "azurerm_kubernetes_cluster" "unirkube" {
   name                = "unir-kubernetes-cluster"
   location            = azurerm_resource_group.unir.location
@@ -30,13 +31,14 @@ resource "azurerm_kubernetes_cluster" "unirkube" {
     network_plugin = "azure"
     load_balancer_sku = "standard"
 
-    #load_balancer_profile {
-    #  outbound_ip_address_ids = [azurerm_public_ip.kubeunirpublicip.id]
-    #}
+    load_balancer_profile {
+      outbound_ip_address_ids = [azurerm_public_ip.mongo.id]
+    }
   }
 
 }
 
+# kubeconfig para utilizarlo con kubectl
 
 resource "local_file" "kubeconfig" {
   filename = "../ansible/kube.config"
