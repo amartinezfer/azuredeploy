@@ -23,10 +23,6 @@ resource "azurerm_dns_a_record" "dns_a_record_vm" {
 }
 
 
-#data "dns_a_record_set" "dns" {
-#  host = element(tolist("${azurerm_dns_zone.unirdnszone.name_servers}"), 0)
-#}
-
 
 
 # Crea una tarjeta de interfaz de red
