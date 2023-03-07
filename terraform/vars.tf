@@ -1,4 +1,5 @@
 
+#varaibles utilizadas
 
 variable "grupo_recursos" {
   type        = string
