@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: mongo
-          image: mongo:4.4
+          image: {{ansible_register}}/kube/mongo:casopractico2
           resources:
             requests:
               cpu: 1000m
@@ -65,7 +65,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: mongodb.example.com
+  - host: mongodb.unir.io
     http:
       paths:
       - path: /mongo
