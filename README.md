@@ -2,39 +2,39 @@
 
 
 
-Herramientas utilizadas: 
+## Herramientas utilizadas: 
 
-ssh-keygen 
+- ssh-keygen 
 
-openssl 
+- openssl 
 
-Terraform 
+- Terraform 
 
-Ansble 
-
- 
-
-Elementos Desplegados: 
-
-Azure Linux Virtual Machine 
-
-Azure Conteiner Register 
-
-Azure Kubernetes Cluster 
+- Ansble 
 
  
 
-Aplicaciones desplegadas: 
+##  Elementos Desplegados: 
 
-Aplicación Web Apache, en entorno virtual machine. 
+- Azure Linux Virtual Machine 
 
-Base de datos Mongo, en entorno kubernetes 
+- Azure Conteiner Register 
+
+- Azure Kubernetes Cluster 
 
  
 
-Sistemas Operativos: 
+##  Aplicaciones desplegadas: 
 
-Bastión: Linux Mint 
+- Aplicación Web Apache, en entorno virtual machine. 
 
-Virtual Machine: Ubuntu 18 
+- Base de datos Mongo, en entorno kubernetes 
+
+ 
+
+##  Sistemas Operativos: 
+
+- Bastión: Linux Mint 
+
+- Virtual Machine: Ubuntu 18 
 
