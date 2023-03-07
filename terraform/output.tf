@@ -1,5 +1,5 @@
 
-
+# variables de salida
  output "unir_principal_id" {
     value     = "${azuread_service_principal.unirprincipal.application_id}"
     sensitive = false
