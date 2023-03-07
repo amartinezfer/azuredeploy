@@ -1,3 +1,5 @@
+
+#dependencias
 terraform {
   required_providers {
     azurerm = {
@@ -23,6 +25,7 @@ provider "azurerm" {
    features {}
 }
 
+#resource group
 resource "azurerm_resource_group" "unir" {
   name     = var.grupo_recursos
   location = var.location 
