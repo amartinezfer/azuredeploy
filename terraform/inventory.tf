@@ -1,4 +1,5 @@
 
+#creacion del inventario ansible utilizando templates de terraform
 data "azurerm_subscription" "current" {}
 
  locals {
