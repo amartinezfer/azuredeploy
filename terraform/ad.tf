@@ -1,4 +1,4 @@
-# Retrieve domain information
+# informacion de dominio
 data "azuread_domains" "unir" {
   only_initial = true
 }
@@ -17,13 +17,6 @@ resource "azuread_service_principal" "unirprincipal" {
 }
 
 
-
-# Create a user
-#resource "azuread_user" "user" {
-#  user_principal_name = "amafernandez@${data.azuread_domains.unir.domains.0.domain_name}"
-#  display_name        = "Example User"
-#  password            = var.password
-#}
 
 resource "azuread_service_principal_password" "unirprincipalpass" {
   service_principal_id = azuread_service_principal.unirprincipal.object_id
