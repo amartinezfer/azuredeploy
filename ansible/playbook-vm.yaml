@@ -22,7 +22,7 @@
    - name: Actualizar repositorios apt
      apt:
         update_cache: yes
-   - name: ensure python3 is installed     
+   - name: Asegurarse python instalado    
      ansible.builtin.package:
         name:
           - python3
@@ -44,12 +44,12 @@
         name:
            - podman
         state: present
-   - name: Add Kubernetes repository key     
+   - name: añadir Kubernetes repository key     
      apt_key:
       url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
       state: present
 
-   - name: Add Kubernetes repository  
+   - name: añadir  Kubernetes repository  
      apt_repository:
       repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
       state: present
@@ -62,7 +62,7 @@
       username: "{{hostvars[inventory_hostname]['ansible_register_user']}}"
       password: "{{hostvars[inventory_hostname]['ansible_register_pass']}}"
       registry: "{{hostvars[inventory_hostname]['ansible_register']}}"
-   - name: create build directory
+   - name: Crear directorio build
      file:
         path: /tmp/dockerfile
         state: directory
@@ -84,17 +84,17 @@
         owner: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         group: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         mode: '0644'
-   - name: Pull an image httpd
+   - name: Pull  image httpd
      podman_image:
       name: docker://httpd:latest
    - name: Pull an image mongo
      podman_image:
       name: docker://mongo:latest
 
-   - name: Build and push an image web 
+   - name: Build and push imagen http
      podman_image:
       name: apache
-      tag: "1.0"
+      tag: "casopractico2"
       path: /tmp/dockerfile/httpd      
       build:
         cache: no
@@ -110,10 +110,10 @@
       push_args:
           dest: "{{hostvars[inventory_hostname]['ansible_register']}}/vm"
       
-   - name:  Build and push an image mongo 
+   - name:  Build and push  image mongo 
      podman_image:
       name: mongo
-      tag: "1.0"
+      tag: "casopractico2"
       path: /tmp/dockerfile/mongo      
       build:
         cache: no
@@ -130,10 +130,10 @@
          dest: "{{hostvars[inventory_hostname]['ansible_register']}}/kube"
       
 
-   - name: Running httpd image.
+   - name: Arrancar  httpd image.
      podman_container:
           name: apache
-          image: "{{hostvars[inventory_hostname]['ansible_register']}}/vm/apache:1.0"
+          image: "{{hostvars[inventory_hostname]['ansible_register']}}/vm/apache:casopractico2"
           state: started
           ports:
             - "8443:8443"
@@ -142,18 +142,15 @@
             restart_policy: always
             time: 120
             names: true
-   - name: start apache service
-     systemd: state=started name=container-apache daemon_reload=yes
-   
-
+   - name: start httpd service
+     systemd: state=started name=container-apache daemon_reload=yes   
    - name: copy Mongo Kube deploy
      template:
         src: ./template/mongoApp.j2
         dest: /tmp/mongoApp.yaml
         owner: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         group: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
-        mode: '0644'
-  
+        mode: '0644'  
    - name: copy kubeconfig
      copy:
         src: ./kube.config
@@ -161,7 +158,7 @@
         owner: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         group: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         mode: '0644'    
-   - name: Create a Deployment by reading the definition from a local file
+   - name: Create and Deployment leyendo un archivo de yaml
      kubernetes.core.k8s:
       state: present
       src: /tmp/mongoApp.yaml
